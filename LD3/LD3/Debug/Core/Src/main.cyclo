@@ -1,8 +1,0 @@
-../Core/Src/main.c:65:6:counterInc	1
-../Core/Src/main.c:75:5:main	1
-../Core/Src/main.c:128:6:SystemClock_Config	3
-../Core/Src/main.c:174:13:MX_NVIC_Init	1
-../Core/Src/main.c:186:13:MX_TIM2_Init	4
-../Core/Src/main.c:231:13:MX_TIM3_Init	4
-../Core/Src/main.c:276:13:MX_GPIO_Init	1
-../Core/Src/main.c:314:6:Error_Handler	1
