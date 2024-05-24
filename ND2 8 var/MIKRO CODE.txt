@@ -1,0 +1,56 @@
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
+
+int i = 0;
+
+int A[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+int B[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+int C[8] = {1, 0, 1, 0, 1, 0, 1, 0};
+
+ISR(PCINT2_vect) {
+    if (!(PIND & (1 << PD3))) { // Check if the button on PD3 is still pressed
+        i++;
+        if (i > 7) i = 0;
+    }
+  	changeLED();
+}
+
+void changeLED() {
+	PORTC &= ~((1 << 2) | (1 << 1) | (1 << 0)); // Reset LED to low
+    PORTC |= (A[i] << 2) | (B[i] << 1) | (C[i] << 0); // Set LED to the value
+	
+}
+
+int main(void) {
+    // Set pins PC0-PC5 as output
+    DDRC = (1 << PC6) | (1 << PC1) | (1 << PC2) | (1 << PC3) | (1 << PC4) | (1 << PC5);
+
+    // Set pins PB2-PB5 as output
+    DDRB |= (1 << PB2) | (1 << PB3) | (1 << PB4) | (1 << PB5);
+
+    // Set pin PD3 as input with pull-up resistor
+    DDRD &= ~(1 << PD3);
+    PORTD |= (1 << PD3);
+
+    // Set pin PD4 as input with pull-up resistor
+    DDRD &= ~(1 << PD4);
+
+    // Enable pin change interrupt for PCINT19 (PD3)
+    PCICR |= (1 << PCIE2);  // Enable pin change interrupt for port D
+    PCMSK2 |= (1 << PCINT19);  // Enable pin change interrupt for PD3
+
+    sei(); // Enable global interrupts
+
+    i = 0;
+  	changeLED();
+    while (1) {
+      	_delay_ms(50);
+      	if (!(PIND & (1 << PD4))) { // Check if the button on PD4 is still pressed
+          PORTB &= ~((1<<PB5) | (1<<PB4) | (1<<PB3));
+          PORTB |= (A[i]<<PB5) | (B[i]<<PB4) | (C[i]<<PB3);
+    	}
+    }
+
+    return 0;
+}
